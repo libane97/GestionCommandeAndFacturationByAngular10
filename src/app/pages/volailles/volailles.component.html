@@ -1,0 +1,262 @@
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+      <div class="container-fluid">
+          <div class="row mb-2">
+              <div class="col-sm-6">
+                  <h1 class="m-0 text-dark">Gestion Facturation</h1>
+              </div>
+          </div>
+          <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <section class="content">
+      <div class="container-fluid">
+          <div *ngIf="!check">
+              <div class="row">
+                  <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Nom & Prenom</label>
+                          <input type="text" class="form-control" placeholder="Enter Nom & Prenom" [(ngModel)]="client.nom" required="required">
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Telephone </label>
+                          <input type="tel" class="form-control" placeholder="Enter Telephone" [(ngModel)]="client.telephone" required="required">
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Adresse</label>
+                          <input type="text" class="form-control" placeholder="Enter Adresse" [(ngModel)]="client.address" required="required">
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Selectionner document </label>
+                          <select class="form-control" required="required" [(ngModel)]="client.facture" name="facture" id="facture">
+                      <option value="Facture">Facture</option>
+                      <option value="Devis">Devis</option>
+                    </select>
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Selectionner Les produits</label>
+                          <select class="form-control" required="required" [(ngModel)]="product" name="product" id="product" (change)="add()">
+                      <option *ngFor="let d of data"  [ngValue]="d">{{ d.abat.nom+' '+d.nom }}</option>
+                    </select>
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="form-group">
+                          <label>Remise </label>
+                          <input type="number" class="form-control" placeholder="Enter Remise" [(ngModel)]="remise" name="remise" id="remise">
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-12">
+                      <div class="card">
+                          <div class="card-header">
+                              <h3 class="card-title">SeneMusk le Site qui vous rapproche de votre table à manger !</h3>
+                          </div>
+                          <!-- /.card-header -->
+                          <div class="card-body">
+                              <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                  <div class="row">
+                                      <div class="col-sm-12 col-md-6"></div>
+                                      <div class="col-sm-12 col-md-6"></div>
+                                  </div>
+                                  <div class="row">
+                                      <div class="col-sm-12">
+                                          <table id="example2" class="table table-bordered table-hover dataTable dtr-inline" role="grid" aria-describedby="example2_info">
+                                              <thead>
+                                                  <tr role="row" class="even">
+                                                      <td>Référence</td>
+                                                      <td>Désignation</td>
+                                                      <td>Quantite</td>
+                                                      <td>Prix </td>
+                                                      <td>Montant</td>
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+                                                  <tr *ngFor="let p of listProduct">
+                                                      <td>{{ p.id }}</td>
+                                                      <td *ngIf="p.type ==1 ">{{ p.abat.nom +' '+ p.nom }}</td>
+                                                      <td *ngIf="p.type != 1 ">{{ p.nom }}</td>
+                                                      <td>
+                                                          <input type="number" name="qty" [value]="1" min="1" max="{{p.quantite}}" [(ngModel)]="p.qty" required />
+                                                      </td>
+                                                      <td>{{ p.prix }}</td>
+                                                      <td>{{ (p.prix * p.qty) || 0 }} CFA</td>
+                                                  </tr>
+                                                  <tr *ngIf="listProduct.length != 0">
+                                                      <td colspan="4">
+                                                          Remise
+                                                      </td>
+                                                      <td id="total">{{ this.TotalCommande * remise/100 || 0 }} CFA</td>
+                                                  </tr>
+                                                  <tr *ngIf="listProduct.length != 0">
+                                                      <td colspan="4">
+                                                          Total de la commande
+                                                      </td>
+                                                      <td id="total">{{ MontantTotalByCommande() || 0 }} CFA</td>
+                                                  </tr>
+                                                  <tr *ngIf="listProduct.length != 0">
+                                                      <td colspan="4">
+                                                          Net à payer TTC
+                                                      </td>
+                                                      <td id="total">{{ remis() || 0 }} CFA</td>
+                                                  </tr>
+                                                  <tr>
+                                                      <td *ngIf="listProduct.length == 0" colspan="5"> Selectionner un produit</td>
+                                                  </tr>
+                                              </tbody>
+                                          </table>
+                                      </div>
+                                  </div>
+                                  <div class="row">
+                                      <div class="col-sm-12 col-md-7">
+                                          <div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- /.card-body -->
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="card-footer">
+                      <button type="submit" class="btn btn-primary" (click)="getinformation()">Valider</button>
+                  </div>
+              </div>
+          </div>
+          <div *ngIf="check" class="class">
+              <div class="container printformClass" id="print-wrapper">
+                  <div class="row">
+                      <div class="col-md-4">
+                          <img src="assets/dist/img/logo.png" alt="AdminLTE Logo" class="brand-image" style="opacity: .8"><br><br>
+                          <label class="label">E-MUSK SARL</label><br>
+                          <label class="label">www.senemusk.com</label><br>
+                          <label class="label">Cité Comico, Ouakam ville n°44</label><br>
+                          <label class="label">Email: contact@senemusk.com</label><br>
+                          <label class="label">Téléphone +221 33 868 19 22 <br> <span class="span-class">+221 77 228 19 96</span></label>
+                      </div>
+                      <div class="col-md-2">
+
+                      </div>
+                      <div class="col-md-4">
+                          <label class="label">Dakar, le {{ todayNow | date:'d MMMM y'}}</label>
+                      </div>
+                  </div><br>
+                  <div class="row">
+                      <div class="col-md-4">
+
+                      </div>
+                      <div class="col-md-4">
+                          <label class="label" *ngIf="client.facture == 'Facture'">{{client.facture}} N°EM {{numeroCommande}}</label>
+                          <label class="label" *ngIf="client.facture == 'Devis'">Devis</label>
+                      </div>
+                      <div class="col-md-4">
+                          <label class="label">Client(e): Chez {{client.nom}}</label><br>
+                          <label class="label">Téléphone: {{client.telephone}}</label><br>
+                          <label class="label">Adresse: {{client.address}}</label>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-md-12">
+                          <div class="card">
+                              <div class="card-header">
+                                  <h3 class="card-title">SeneMusk le Site qui vous rapproche de votre table à manger !</h3>
+                              </div>
+                              <!-- /.card-header -->
+                              <div class="card-body">
+                                  <div id="example2_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                      <div class="row">
+                                          <div class="col-sm-12 col-md-6"></div>
+                                          <div class="col-sm-12 col-md-6"></div>
+                                      </div>
+                                      <div class="row">
+                                          <div class="col-sm-12">
+                                              <table id="example2" class="table table-bordered table-hover dataTable dtr-inline" role="grid" aria-describedby="example2_info">
+                                                  <thead>
+                                                      <tr role="row" class="even">
+                                                          <td>Référence</td>
+                                                          <td>Désignation</td>
+                                                          <td>Quantite</td>
+                                                          <td>Prix </td>
+                                                          <td>Montant</td>
+                                                      </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                      <tr *ngFor="let p of listProduct">
+                                                          <td>{{ p.id }}</td>
+                                                          <td *ngIf="p.type ==1 ">{{ p.abat.nom +' '+ p.nom }}</td>
+                                                          <td *ngIf="p.type != 1 ">{{ p.nom }}</td>
+                                                          <td>
+                                                              {{ p.qty }} 
+                                                          </td>
+                                                          <td>{{ p.prix }}</td>
+                                                          <td>{{ (p.prix * p.qty) || 0 }} CFA</td>
+                                                      </tr>
+                                                      <tr *ngIf="listProduct.length != 0">
+                                                          <td colspan="4">
+                                                              Remise
+                                                          </td>
+                                                          <td id="total">{{ this.TotalCommande * remise/100 || 0 }} CFA</td>
+                                                      </tr>
+                                                      <tr *ngIf="listProduct.length != 0">
+                                                          <td colspan="4">
+                                                              Total de la commande
+                                                          </td>
+                                                          <td id="total">{{ MontantTotalByCommande() || 0 }} CFA</td>
+                                                      </tr>
+                                                      <tr *ngIf="listProduct.length != 0">
+                                                          <td colspan="4">
+                                                              Net à payer TTC
+                                                          </td>
+                                                          <td id="total">{{ remis() || 0 }} CFA</td>
+                                                      </tr>
+                                                      <tr>
+                                                          <td *ngIf="listProduct.length == 0" colspan="5"> Selectionner un produit</td>
+                                                      </tr>
+                                                  </tbody>
+                                              </table>
+                                          </div>
+                                      </div>
+                                      <div class="row">
+                                          <div class="col-sm-12 col-md-7">
+                                              <div class="dataTables_paginate paging_simple_numbers" id="example2_paginate">
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <!-- /.card-body -->
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="container-fluid" *ngIf="check">
+                  <div class="row">
+                      <div class="card-footer">
+                          <button type="submit" class="btn btn-primary" (click)="getdiv()">Valider</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
